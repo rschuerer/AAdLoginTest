@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Services.MicrosoftGraph;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,22 @@ namespace AAdLoginTest
         public MainPage()
         {
             this.InitializeComponent();
+            var oauthSettings = Windows.ApplicationModel.Resources.ResourceLoader.GetForCurrentView("OAuth");
+            var appId = oauthSettings.GetString("AppId");
+            var scopes = oauthSettings.GetString("Scopes");
+
+            if (string.IsNullOrEmpty(appId) || string.IsNullOrEmpty(scopes))
+            {
+                return;
+            }
+            else
+            {
+                // Initialize Graph
+                MicrosoftGraphService.Instance.AuthenticationModel = MicrosoftGraphEnums.AuthenticationModel.V2;
+                MicrosoftGraphService.Instance.Initialize(appId,
+                    MicrosoftGraphEnums.ServicesToInitialize.UserProfile,
+                    scopes.Split(' '));
+            }
         }
     }
 }
